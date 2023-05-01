@@ -1,9 +1,19 @@
 # Student Budget App
 
 
+## Resources
+
+- https://www.npmjs.com/package/react-native-chart-kit
+
+
 ## Dependencies
 
 - npx expo install react-native-web@~0.18.10 react-dom@18.2.0 @expo/webpack-config@^18.0.1
-
-
-Test
+- npm i uuid
+- npm i prop-types
+- npm i expo-constants
+- npm i @expo/vector-icons
+- npm i expo-linear-gradient
+- npm i react-native-get-random-values
+- npm i react-native-dropdownalert
+- npm i @react-native-async-storage/async-storage
