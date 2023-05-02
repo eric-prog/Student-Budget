@@ -25,6 +25,7 @@ export default class App extends Component {
 
   state = {
     newPriceItem: '',
+    newPriceVal: 0,
     dataIsReady: false,
     prices: {}, 
   };
@@ -46,12 +47,15 @@ export default class App extends Component {
   newPriceItemController = (textValue) => {
     this.setState({ newPriceItem: textValue });
   };
+  newPriceValController = (numValue) => {
+    this.setState({ newPriceVal: numValue });
+  };
   saveprices = (newprices) => {
     AsyncStorage.setItem('prices', JSON.stringify(newprices));
   };
   
   addPrice = () => {
-    const { newPriceItem } = this.state;
+    const { newPriceItem, newPriceVal } = this.state;
 
     if (newPriceItem !== '') {
       this.setState((prevState) => {
@@ -60,6 +64,7 @@ export default class App extends Component {
           [ID]: {
             id: ID,
             textValue: newPriceItem,
+            numValue: newPriceVal,
             createdAt: Date.now(),
           },
         };
@@ -105,7 +110,7 @@ export default class App extends Component {
     });
   };
 
-  updatePrice = (id, textValue) => {
+  updatePrice = (id, textValue, numValue) => {
     this.setState((prevState) => {
       const newState = {
         ...prevState,
@@ -114,6 +119,7 @@ export default class App extends Component {
           [id]: {
             ...prevState.prices[id],
             textValue: textValue,
+            numValue: numValue,
           },
         },
       };
@@ -123,7 +129,7 @@ export default class App extends Component {
   };
   
   render() {
-    const { newPriceItem, dataIsReady, prices } = this.state;
+    const { newPriceItem, newPriceVal, dataIsReady, prices } = this.state;
 
     if (!dataIsReady) {
       return <ActivityIndicator />;
@@ -131,7 +137,7 @@ export default class App extends Component {
 
     return (
       <LinearGradient style={styles.container} colors={['#DA4453', '#89216B']}>
-        <LineGraph />
+        <LineGraph priceObjs={prices} />
         <StatusBar barStyle="light-content" />
 
         <Text style={styles.appTitle}>Price App{'\n'}Using AsyncStorage</Text>
@@ -146,6 +152,18 @@ export default class App extends Component {
             autoCorrect={false}
             onSubmitEditing={this.addPrice}
           />
+
+          <TextInput
+            style={styles.input}
+            placeholder={'Add an item!'}
+            value={newPriceVal}
+            onChangeText={this.newPriceValController}
+            placeholderTextColor={'#999'}
+            returnKeyType={'done'}
+            autoCorrect={false}
+            onSubmitEditing={this.addPrice}
+          />
+
           <ScrollView contentContainerStyle={styles.listContainer}>
             {Object.values(prices).map((price) => (
               <PriceList

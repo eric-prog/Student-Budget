@@ -19,12 +19,14 @@ class PriceList extends Component {
 
     this.state = {
       isEditing: false,
-      priceValue: props.textValue,
+      priceText: props.textValue,
+      priceNum: props.numValue,
     };
   }
 
-  static propTypes = { // equivalent of interface using PropTypes from 'prop-types' library
+  static propTypes = { 
     textValue: PropTypes.string.isRequired,
+    numValue: PropTypes.string.isRequired,
     deletePrice: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
     completePrice: PropTypes.func.isRequired,
@@ -32,12 +34,12 @@ class PriceList extends Component {
   };
 
   finishEditing = () => {
-    const { priceValue } = this.state;
+    const { priceText, priceNum } = this.state;
     const { id, updatePrice } = this.props;
-    updatePrice(id, priceValue);
+    updatePrice(id, priceText, priceNum);
     this.setState({
         isEditing: false,
-      });
+    });
   };
 
   startEditing = () => {
@@ -46,33 +48,54 @@ class PriceList extends Component {
     });
   };
 
-  controlInput = (textValue) => {
-    this.setState({ priceValue: textValue });
+  controlTextInput = (textValue) => {
+    this.setState({ priceText: textValue });
+  };
+  controlNumInput = (numValue) => {
+    this.setState({ priceNum: numValue });
   };
 
   render() {
-    const { isEditing, priceValue } = this.state;
-    const { textValue, id, deletePrice } = this.props;
+    const { isEditing, priceText, priceNum } = this.state;
+    const { textValue, numValue, id, deletePrice } = this.props;
 
     return (
       <View style={styles.container}>
         <View style={styles.rowContainer}>
           {isEditing ? (
-            <TextInput
-              value={priceValue}
-              style={[
-                styles.text,
-                styles.input
-              ]}
-              multiline={true}
-              returnKeyType={'done'}
-              onBlur={this.finishEditing}
-              onChangeText={this.controlInput}
-            />
+            <View>
+              <TextInput
+                value={priceText}
+                style={[
+                  styles.text,
+                  styles.input
+                ]}
+                multiline={true}
+                returnKeyType={'done'}
+                onBlur={this.finishEditing}
+                onChangeText={this.controlTextInput}
+              />
+              <TextInput
+                value={priceNum}
+                style={[
+                  styles.text,
+                  styles.input
+                ]}
+                multiline={true}
+                returnKeyType={'done'}
+                onBlur={this.finishEditing}
+                onChangeText={this.controlNumInput}
+              />
+            </View>
           ) : (
-            <Text>
-              {textValue}
-            </Text>
+            <View>
+              <Text>
+                {textValue}
+              </Text>
+              <Text>
+                {numValue}
+              </Text>
+            </View>
           )}
         </View>
 
