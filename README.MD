@@ -17,3 +17,7 @@
 - npm i react-native-get-random-values
 - npm i react-native-dropdownalert
 - npm i @react-native-async-storage/async-storage
+- npm i react-native-chart-kit
+- npm i react-native-svg
+- npm i --save-dev babel-plugin-rename-jsx-attribute <-- useless
+- npm install -g expo-cli

@@ -10,139 +10,120 @@ import {
   ScrollView,
   ActivityIndicator
 } from 'react-native';
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import 'react-native-get-random-values';
 import { v1 as uuidv1 } from 'uuid';
 import { LinearGradient } from 'expo-linear-gradient';
+import PriceList from './PriceList';
+import LineGraph from './LineGraph';
+
 
 const { height, width } = Dimensions.get('window');
 
-import TodoList from './TodoList';
 
 export default class App extends Component {
+
   state = {
-    newTodoItem: '',
+    newPriceItem: '',
     dataIsReady: false,
-    todos: {}, // add this
-  };
-  newTodoItemController = (textValue) => {
-    this.setState({
-      newTodoItem: textValue,
-    });
-    console.log('data', this.state);
-  };
-  componentDidMount = () => {
-    this.loadTodos();
+    prices: {}, 
   };
 
-  loadTodos = async () => {
+  componentDidMount = () => {
+    this.loadprices();
+  };
+  loadprices = async () => {
     try {
-      const getTodos = await AsyncStorage.getItem('todos');
-      const parsedTodos = JSON.parse(getTodos);
-      this.setState({ dataIsReady: true, todos: parsedTodos || {} });
+      const getprices = await AsyncStorage.getItem('prices');
+      const parsedprices = JSON.parse(getprices);
+      this.setState({ dataIsReady: true, prices: parsedprices || {} });
     } catch (err) {
       console.log(err);
     }
   };
 
-  saveTodos = (newToDos) => {
-    AsyncStorage.setItem('todos', JSON.stringify(newToDos));
-  };
-  addTodo = () => {
-    const { newTodoItem } = this.state;
 
-    if (newTodoItem !== '') {
+  newPriceItemController = (textValue) => {
+    this.setState({ newPriceItem: textValue });
+  };
+  saveprices = (newprices) => {
+    AsyncStorage.setItem('prices', JSON.stringify(newprices));
+  };
+  
+  addPrice = () => {
+    const { newPriceItem } = this.state;
+
+    if (newPriceItem !== '') {
       this.setState((prevState) => {
         const ID = uuidv1();
-        const newToDoObject = {
+        const newPriceObject = {
           [ID]: {
             id: ID,
-            isCompleted: false,
-            textValue: newTodoItem,
+            textValue: newPriceItem,
             createdAt: Date.now(),
           },
         };
         const newState = {
-          ...prevState,
-          newTodoItem: '',
-          todos: {
-            ...prevState.todos,
-            ...newToDoObject,
+          prices: {
+            ...prevState.prices,
+            ...newPriceObject,
           },
         };
 
-        this.saveTodos(newState.todos); // add this
+        this.saveprices(newState.prices); 
         return { ...newState };
       });
     }
   };
 
-  deleteTodo = (id) => {
+  deletePrice = (id) => {
     this.setState((prevState) => {
-      const todos = prevState.todos;
-      delete todos[id];
+      const prices = prevState.prices;
+      delete prices[id];
       const newState = {
         ...prevState,
-        ...todos,
+        ...prices,
       };
-      this.saveTodos(newState.todos); // add this
+      this.saveprices(newState.prices); 
       return { ...newState };
     });
   };
 
-  inCompleteTodo = (id) => {
+  completePrice = (id) => {
     this.setState((prevState) => {
       const newState = {
         ...prevState,
-        todos: {
-          ...prevState.todos,
+        prices: {
+          ...prevState.prices,
           [id]: {
-            ...prevState.todos[id],
-            isCompleted: false,
+            ...prevState.prices[id]
           },
         },
       };
-      this.saveTodos(newState.todos); // add this
+      this.saveprices(newState.prices); 
       return { ...newState };
     });
   };
 
-  completeTodo = (id) => {
+  updatePrice = (id, textValue) => {
     this.setState((prevState) => {
       const newState = {
         ...prevState,
-        todos: {
-          ...prevState.todos,
+        prices: {
+          ...prevState.prices,
           [id]: {
-            ...prevState.todos[id],
-            isCompleted: true,
-          },
-        },
-      };
-      this.saveTodos(newState.todos); // add this
-      return { ...newState };
-    });
-  };
-  updateTodo = (id, textValue) => {
-    this.setState((prevState) => {
-      const newState = {
-        ...prevState,
-        todos: {
-          ...prevState.todos,
-          [id]: {
-            ...prevState.todos[id],
+            ...prevState.prices[id],
             textValue: textValue,
           },
         },
       };
-      this.saveTodos(newState.todos); // add this
+      this.saveprices(newState.prices); // add this
       return { ...newState };
     });
   };
+  
   render() {
-    const { newTodoItem, dataIsReady, todos } = this.state;
+    const { newPriceItem, dataIsReady, prices } = this.state;
 
     if (!dataIsReady) {
       return <ActivityIndicator />;
@@ -150,29 +131,29 @@ export default class App extends Component {
 
     return (
       <LinearGradient style={styles.container} colors={['#DA4453', '#89216B']}>
+        <LineGraph />
         <StatusBar barStyle="light-content" />
 
-        <Text style={styles.appTitle}>Todo App{'\n'}Using AsyncStorage</Text>
+        <Text style={styles.appTitle}>Price App{'\n'}Using AsyncStorage</Text>
         <View style={styles.card}>
           <TextInput
             style={styles.input}
             placeholder={'Add an item!'}
-            value={newTodoItem}
-            onChangeText={this.newTodoItemController}
+            value={newPriceItem}
+            onChangeText={this.newPriceItemController}
             placeholderTextColor={'#999'}
             returnKeyType={'done'}
             autoCorrect={false}
-            onSubmitEditing={this.addTodo}
+            onSubmitEditing={this.addPrice}
           />
           <ScrollView contentContainerStyle={styles.listContainer}>
-            {Object.values(todos).map((todo) => (
-              <TodoList
-                key={todo.id}
-                {...todo}
-                deleteTodo={this.deleteTodo}
-                inCompleteTodo={this.inCompleteTodo}
-                completeTodo={this.completeTodo}
-                updateTodo={this.updateTodo} // add this
+            {Object.values(prices).map((price) => (
+              <PriceList
+                key={price.id}
+                {...price}
+                deletePrice={this.deletePrice}
+                completePrice={this.completePrice}
+                updatePrice={this.updatePrice} 
               />
             ))}
           </ScrollView>

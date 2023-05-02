@@ -7,42 +7,37 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-
-const { height, width } = Dimensions.get('window');
 import PropTypes from 'prop-types';
 
-class TodoList extends Component {
+
+const { height, width } = Dimensions.get('window');
+
+
+class PriceList extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       isEditing: false,
-      todoValue: props.textValue,
+      priceValue: props.textValue,
     };
   }
-  // in our class before we define state
-  static propTypes = {
+
+  static propTypes = { // equivalent of interface using PropTypes from 'prop-types' library
     textValue: PropTypes.string.isRequired,
-    isCompleted: PropTypes.bool.isRequired,
-    deleteTodo: PropTypes.func.isRequired,
+    deletePrice: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
-    inCompleteTodo: PropTypes.func.isRequired,
-    completeTodo: PropTypes.func.isRequired,
-    updateTodo: PropTypes.func.isRequired,
+    completePrice: PropTypes.func.isRequired,
+    updatePrice: PropTypes.func.isRequired,
   };
 
-  state = {
-    todoValue: '',
-    isEditing: false,
-  };
-
-  toggleItem = () => {
-    const { isCompleted, inCompleteTodo, completeTodo, id } = this.props;
-    if (isCompleted) {
-      inCompleteTodo(id);
-    } else {
-      completeTodo(id);
-    }
+  finishEditing = () => {
+    const { priceValue } = this.state;
+    const { id, updatePrice } = this.props;
+    updatePrice(id, priceValue);
+    this.setState({
+        isEditing: false,
+      });
   };
 
   startEditing = () => {
@@ -51,43 +46,23 @@ class TodoList extends Component {
     });
   };
 
-  finishEditing = () => {
-    this.setState({
-      isEditing: false,
-    });
-  };
   controlInput = (textValue) => {
-    this.setState({ todoValue: textValue });
+    this.setState({ priceValue: textValue });
   };
-  finishEditing = () => {
-    const { todoValue } = this.state;
-    const { id, updateTodo } = this.props;
-    updateTodo(id, todoValue);
-    this.setState({
-      isEditing: false,
-    });
-  };
+
   render() {
-    const { isEditing, todoValue } = this.state;
-    const { textValue, id, deleteTodo, isCompleted } = this.props;
+    const { isEditing, priceValue } = this.state;
+    const { textValue, id, deletePrice } = this.props;
 
     return (
       <View style={styles.container}>
         <View style={styles.rowContainer}>
-          <TouchableOpacity onPress={this.toggleItem}>
-            <View
-              style={[
-                styles.circle,
-                isCompleted ? styles.completeCircle : styles.incompleteCircle,
-              ]}></View>
-          </TouchableOpacity>
           {isEditing ? (
             <TextInput
-              value={todoValue}
+              value={priceValue}
               style={[
                 styles.text,
-                styles.input,
-                isCompleted ? styles.strikeText : styles.unstrikeText,
+                styles.input
               ]}
               multiline={true}
               returnKeyType={'done'}
@@ -95,16 +70,12 @@ class TodoList extends Component {
               onChangeText={this.controlInput}
             />
           ) : (
-            <Text
-              style={[
-                styles.text,
-                isCompleted ? styles.strikeText : styles.unstrikeText,
-              ]}>
+            <Text>
               {textValue}
             </Text>
           )}
         </View>
-        {isEditing ? (
+
           <View style={styles.buttons}>
             <TouchableOpacity onPressOut={this.finishEditing}>
               <View style={styles.buttonContainer}>
@@ -112,20 +83,18 @@ class TodoList extends Component {
               </View>
             </TouchableOpacity>
           </View>
-        ) : (
           <View style={styles.buttons}>
             <TouchableOpacity onPressOut={this.startEditing}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Edit</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPressOut={() => deleteTodo(id)}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Delete</Text>
-              </View>
-            </TouchableOpacity>
           </View>
-        )}
+        <TouchableOpacity onPressOut={() => deletePrice(id)}>
+            <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Delete</Text>
+            </View>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -193,4 +162,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TodoList;
+export default PriceList;
