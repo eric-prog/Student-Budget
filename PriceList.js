@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   TextInput,
+  Image
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -57,13 +58,13 @@ class PriceList extends Component {
 
   render() {
     const { isEditing, priceText, priceNum } = this.state;
-    const { textValue, numValue, id, deletePrice } = this.props;
+    const { textValue, createdAt, numValue, id, deletePrice } = this.props;
 
     return (
       <View style={styles.container}>
         <View style={styles.rowContainer}>
           {isEditing ? (
-            <View>
+            <View style={styles.textWrapper}>
               <TextInput
                 value={priceText}
                 style={[
@@ -88,36 +89,40 @@ class PriceList extends Component {
               />
             </View>
           ) : (
-            <View>
-              <Text>
+            <View style={styles.textWrapper}>
+              <Text style={styles.textValue}>
                 {textValue}
               </Text>
-              <Text>
-                {numValue}
+              <Text style={styles.priceValue}>
+                ${numValue}
+              </Text>
+              <Text style={styles.dateValue}>
+                {createdAt}
               </Text>
             </View>
           )}
         </View>
-
+        <View style={styles.btnWrapper}> 
           <View style={styles.buttons}>
             <TouchableOpacity onPressOut={this.finishEditing}>
               <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Finish</Text>
+                <Image source={require('./assets/check.png')} style={styles.icon}/>
               </View>
             </TouchableOpacity>
           </View>
           <View style={styles.buttons}>
             <TouchableOpacity onPressOut={this.startEditing}>
               <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Edit</Text>
+                <Image source={require('./assets/edit.png')} style={styles.icon}/>
               </View>
             </TouchableOpacity>
           </View>
-        <TouchableOpacity onPressOut={() => deletePrice(id)}>
+          <TouchableOpacity onPressOut={() => deletePrice(id)}>
             <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Delete</Text>
+              <Image source={require('./assets/trash.png')} style={styles.icon}/>
             </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -125,44 +130,42 @@ class PriceList extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: width - 50,
-    borderBottomColor: '#bbb',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    width: width - 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#E2E2E2',
+    padding: 20,
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 12,
   },
-
+  btnWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 23,
+    height: 23
+  },  
   input: {
     marginVertical: 15,
-    width: width / 2,
+    width: (width / 2)-20,
+    padding: 8,
     paddingBottom: 5,
+    outlineStyle: 'none',
+    backgroundColor: '#D0D0D0',
+    borderRadius: 5,
   },
   text: {
     fontWeight: '500',
     fontSize: 18,
     marginVertical: 20,
   },
-  // Styles
-  circle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    // remove borderColor property from here
-    borderWidth: 3,
-    marginRight: 20,
-  },
-  completeCircle: {
-    borderColor: '#bbb',
-  },
-  incompleteCircle: {
-    borderColor: '#DA4453',
-  },
-
   rowContainer: {
     flexDirection: 'row',
-    width: width / 2,
+    width: (width / 2)-40,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -173,16 +176,37 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
   },
-
-  // Styles
-
-  strikeText: {
-    color: '#bbb',
-    textDecorationLine: 'line-through',
+  buttonText: {
+    color: '#FF0000'
   },
-  unstrikeText: {
-    color: '#29323c',
+  textWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },  
+  textValue: {
+    fontSize: 30,
+    marginBottom: 18,
   },
+  priceValue: {
+    backgroundColor: '#2E2E2E',
+    borderRadius: 6,
+    padding: 5,
+    paddingLeft: 15,
+    paddingRight: 15,
+    fontSize: 25,
+    marginBottom: 10,
+    color: '#1EE3AD'
+  },
+  dateValue: {
+    backgroundColor: '#2E2E2E',
+    borderRadius: 6,
+    padding: 5,
+    fontSize: 14,
+    color: '#E6CF12',
+    paddingLeft: 15,
+    paddingRight: 15,
+  }
 });
 
 export default PriceList;

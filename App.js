@@ -4,21 +4,25 @@ import {
   View,
   TextInput,
   StyleSheet,
-  StatusBar,
   Dimensions,
-  Platform,
   ScrollView,
   ActivityIndicator
 } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import 'react-native-get-random-values';
 import { v1 as uuidv1 } from 'uuid';
-import { LinearGradient } from 'expo-linear-gradient';
 import PriceList from './PriceList';
-import LineGraph from './LineGraph';
+import Graphs from './LineGraph';
+import * as Font from 'expo-font';
 
 
 const { height, width } = Dimensions.get('window');
+
+
+let customFonts = {
+  'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+  'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+};
 
 
 export default class App extends Component {
@@ -28,9 +32,16 @@ export default class App extends Component {
     newPriceVal: 0,
     dataIsReady: false,
     prices: {}, 
+    fontsLoaded: false,
   };
+  
+  async _loadFontsAsync() {
+    await Font.loadAsync(customFonts);
+    this.setState({ fontsLoaded: true });
+  }
 
   componentDidMount = () => {
+    this._loadFontsAsync();
     this.loadprices();
   };
   loadprices = async () => {
@@ -54,6 +65,11 @@ export default class App extends Component {
     AsyncStorage.setItem('prices', JSON.stringify(newprices));
   };
   
+  formatDate = () => {
+    const date = new Date().toISOString()
+    return date.substring(0, date.indexOf("T"));
+  }
+
   addPrice = () => {
     const { newPriceItem, newPriceVal } = this.state;
 
@@ -65,7 +81,7 @@ export default class App extends Component {
             id: ID,
             textValue: newPriceItem,
             numValue: newPriceVal,
-            createdAt: Date.now(),
+            createdAt: this.formatDate(),
           },
         };
         const newState = {
@@ -129,42 +145,45 @@ export default class App extends Component {
   };
   
   render() {
-    const { newPriceItem, newPriceVal, dataIsReady, prices } = this.state;
+    const { newPriceItem, newPriceVal, dataIsReady, fontsLoaded, prices } = this.state;
 
     if (!dataIsReady) {
       return <ActivityIndicator />;
     }
 
+    if (!fontsLoaded) {
+      return null;
+    }
+
     return (
-      <LinearGradient style={styles.container} colors={['#DA4453', '#89216B']}>
-        <LineGraph priceObjs={prices} />
-        <StatusBar barStyle="light-content" />
-
-        <Text style={styles.appTitle}>Price App{'\n'}Using AsyncStorage</Text>
+      <View style={styles.container}>
+        <Text style={styles.appTitle}>Student Budget 📈</Text>
+        <Graphs priceObjs={prices} />
         <View style={styles.card}>
-          <TextInput
-            style={styles.input}
-            placeholder={'Add an item!'}
-            value={newPriceItem}
-            onChangeText={this.newPriceItemController}
-            placeholderTextColor={'#999'}
-            returnKeyType={'done'}
-            autoCorrect={false}
-            onSubmitEditing={this.addPrice}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder={'Add an item!'}
-            value={newPriceVal}
-            onChangeText={this.newPriceValController}
-            placeholderTextColor={'#999'}
-            returnKeyType={'done'}
-            autoCorrect={false}
-            onSubmitEditing={this.addPrice}
-          />
-
-          <ScrollView contentContainerStyle={styles.listContainer}>
+          <View style={styles.inputCard}>
+            <TextInput
+              style={styles.input}
+              placeholder={'Add an item!'}
+              value={newPriceItem}
+              onChangeText={this.newPriceItemController}
+              placeholderTextColor={'#999'}
+              returnKeyType={'done'}
+              autoCorrect={false}
+              onSubmitEditing={this.addPrice}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder={'Add an item!'}
+              value={newPriceVal}
+              onChangeText={this.newPriceValController}
+              placeholderTextColor={'#999'}
+              returnKeyType={'done'}
+              autoCorrect={false}
+              onSubmitEditing={this.addPrice}
+            />
+          </View>
+          <Text style={styles.history}>Price History 💰</Text>
+          <ScrollView contentContainerStyle={styles.card}>
             {Object.values(prices).map((price) => (
               <PriceList
                 key={price.id}
@@ -176,53 +195,54 @@ export default class App extends Component {
             ))}
           </ScrollView>
         </View>
-      </LinearGradient>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: '#f23657',
+    backgroundColor: '#F1F1F1',
+    width: width
   },
   appTitle: {
-    color: '#fff',
+    color: '#000',
     fontSize: 36,
+    marginTop: 60,
+    marginBottom: 60,
+    fontWeight: '300',
+    textAlign: 'center',
+    fontFamily: 'Inter-Black',
+  },
+  history: {
+    color: '#000',
+    fontSize: 30,
     marginTop: 60,
     marginBottom: 30,
     fontWeight: '300',
     textAlign: 'center',
+    fontFamily: 'Inter-Black',
   },
   card: {
-    backgroundColor: '#fff',
-    flex: 1,
-    width: width - 25,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(50,50,50)',
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        shadowOffset: {
-          height: -1,
-          width: 0,
-        },
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: width,
+    marginBottom: 15
   },
   input: {
     padding: 20,
-    borderBottomColor: '#bbb',
-    borderBottomWidth: 1,
-    fontSize: 24,
+    fontSize: 20,
+    outlineStyle: 'none'
   },
-  listContainer: {
-    alignItems: 'center',
-  },
+  inputCard: {
+    backgroundColor: '#E2E2E2',
+    width: width-40,
+    borderRadius: 15,
+    marginTop: 20
+  }
 });

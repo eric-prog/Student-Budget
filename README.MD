@@ -1,5 +1,11 @@
 # Student Budget App
 
+The app was created as an easy way to record items purchased! A simple way for students to visualize how much they are spending and when! 
+
+## Demo
+
+<img src="./assets/screenshot1.png" />
+<img src="./assets/screenshot2.png" />
 
 ## Resources
 
@@ -21,3 +27,7 @@
 - npm i react-native-svg
 - npm i --save-dev babel-plugin-rename-jsx-attribute <-- useless
 - npm install -g expo-cli
+- npx react-native-asset
+- npx expo install @expo-google-fonts/inter expo-font
+
+

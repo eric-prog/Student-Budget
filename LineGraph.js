@@ -6,18 +6,13 @@ import {
 } from 'react-native';
 import {
     LineChart,
-    // BarChart,
-    // PieChart,
-    // ProgressChart,
-    // ContributionGraph,
-    // StackedBarChart
 } from "react-native-chart-kit";
 
 
 const { height, width } = Dimensions.get('window');
 
 
-class LineGraph extends Component {
+class Graphs extends Component {
     constructor(props) {
         super(props);
     }
@@ -38,6 +33,10 @@ class LineGraph extends Component {
         return []
     }
 
+    getCommitData = () => {
+        
+    }
+
     render() {
         return (
             <View>
@@ -46,36 +45,28 @@ class LineGraph extends Component {
                         labels: this.getLabels(),
                         datasets: [
                             {
-                            data: this.getPrices()
+                                data: this.getPrices()
                             }
                         ]
                     }}
-                    width={width}
+                    style={styles.lineGraph}
+                    width={width-40}
                     height={220}
                     yAxisLabel="$"
-                    yAxisSuffix="k"
                     yAxisInterval={1} 
                     chartConfig={{
-                    backgroundColor: "#e26a00",
-                    backgroundGradientFrom: "#fb8c00",
-                    backgroundGradientTo: "#ffa726",
+                    backgroundGradientFromOpacity: 0,
+                    backgroundGradientToOpacity: 0,
                     decimalPlaces: 2, 
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    style: {
-                        borderRadius: 16
-                    },
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                     propsForDots: {
                         r: "6",
                         strokeWidth: "2",
-                        stroke: "#ffa726"
+                        stroke: "#0CCB83"
                     }
                     }}
                     bezier
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16
-                    }}
                 />
             </View>
         );
@@ -83,4 +74,11 @@ class LineGraph extends Component {
 }
 
 
-export default LineGraph;
+const styles = StyleSheet.create({
+    lineGraph: {
+        fontWeight: '300',
+        fontFamily: 'Inter-Black',
+    }
+})
+
+export default Graphs;
