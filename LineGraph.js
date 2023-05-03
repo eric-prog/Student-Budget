@@ -33,10 +33,6 @@ class Graphs extends Component {
         return []
     }
 
-    getCommitData = () => {
-        
-    }
-
     render() {
         return (
             <View>
